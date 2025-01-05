@@ -1,0 +1,38 @@
+{
+	"schemaVersion": 1,
+	"id": "existence_smp",
+	"version": "${version}",
+	"name": "Existence Community Server Mod",
+	"description": "Existence Community Server 3 1.21.4 Mod",
+	"authors": [
+		"igalaxy"
+	],
+	"contact": {
+		"homepage": "https://existencesmp.com/",
+		"sources": "https://github.com/ExistenceSMP/smp-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/existence_smp/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.existencesmp.mod.ExistenceCommunityServerMod"
+		],
+		"client": [
+			"com.existencesmp.mod.ExistenceCommunityServerModClient"
+		]
+	},
+	"mixins": [
+		"existence_smp.mixins.json",
+		{
+			"config": "existence_smp.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.16.9",
+		"minecraft": "~1.21.4",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}
