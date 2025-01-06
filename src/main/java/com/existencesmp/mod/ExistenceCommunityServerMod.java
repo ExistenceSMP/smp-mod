@@ -2,7 +2,6 @@ package com.existencesmp.mod;
 
 import net.fabricmc.api.ModInitializer;
 
-import net.minecraft.entity.passive.WolfEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +18,5 @@ public class ExistenceCommunityServerMod implements ModInitializer {
 		// This code runs as soon as Minecraft is in a mod-load-ready state.
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
-		WolfEntity
 	}
 }
