@@ -3,7 +3,7 @@
 	"id": "existence_smp",
 	"version": "${version}",
 	"name": "Existence Community Server Mod",
-	"description": "Existence Community Server 3 1.21.4 Mod",
+	"description": "Existence Community Server 3 1.21.5 Mod",
 	"authors": [
 		"igalaxy"
 	],
@@ -30,8 +30,8 @@
 		}
 	],
 	"depends": {
-		"fabricloader": ">=0.16.9",
-		"minecraft": "~1.21.4",
+		"fabricloader": ">=0.16.10",
+		"minecraft": "~1.21.5",
 		"java": ">=21",
 		"fabric-api": "*"
 	}
