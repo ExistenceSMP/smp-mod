@@ -55,8 +55,7 @@ public class ExistenceCommunityServerMod implements ModInitializer {
 						Pronouns pronouns = PronounsApi.getReader().getPronouns(ctx.player());
 						if (pronouns != null) {
 							return PlaceholderResult.value(
-									Text.empty().copy()
-											.append(" [")
+									Text.literal(" [")
 											.append(pronouns.raw())
 											.append("]")
 											.formatted(Formatting.GRAY)
