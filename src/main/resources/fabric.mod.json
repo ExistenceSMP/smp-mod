@@ -16,10 +16,10 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"com.existencesmp.mod.ExistenceCommunityServerMod"
+			"com.existencesmp.mod.SMPMod"
 		],
 		"client": [
-			"com.existencesmp.mod.ExistenceCommunityServerModClient"
+			"com.existencesmp.mod.SMPModClient"
 		]
 	},
 	"mixins": [

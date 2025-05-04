@@ -56,6 +56,7 @@ dependencies {
 	modLocalRuntime "eu.pb4:player-data-api:${project.player_data_api_version}"
 	modLocalRuntime "eu.pb4:predicate-api:${project.predicate_api_version}"
 	modImplementation "eu.pb4:polymer-bundled:${project.polymer_version}"
+	modImplementation include("maven.modrinth:admiral:${project.admiral_version}+fabric")
 }
 
 processResources {
