@@ -2,7 +2,7 @@ package com.existencesmp.mod;
 
 import com.mojang.brigadier.context.CommandContext;
 import de.maxhenkel.admiral.annotations.Command;
-import de.maxhenkel.admiral.annotations.RequiresPermissionLevel;
+import de.maxhenkel.admiral.annotations.RequiresPermission;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -10,7 +10,7 @@ import net.minecraft.util.Formatting;
 @Command("smp")
 public class SMPCommand {
     @Command({"resource-pack", "update"})
-    @RequiresPermissionLevel(4)
+    @RequiresPermission("smp.resourcePack.update")
     public void resourcePackUpdate(CommandContext<ServerCommandSource> context) {
         try {
             SMPMod.downloadResourcePack(context.getSource().getServer(), true);
