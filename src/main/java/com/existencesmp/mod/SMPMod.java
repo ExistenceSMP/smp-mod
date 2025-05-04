@@ -94,12 +94,12 @@ public class SMPMod implements ModInitializer {
 		);
     }
 
-	public static void downloadResourcePack(MinecraftServer server, boolean regenerate) {
-		if (levelName == null) return;
+	public static void downloadResourcePack(MinecraftServer server, boolean regenerate) throws Exception {
+		if (levelName == null) throw new Exception("Unknown level");
 		try {
 			File file = FabricLoader.getInstance().getGameDir().resolve(levelName + "/resourcepacks/existence_community_resource_pack.zip").toFile();
 			if (!file.exists()) file.getParentFile().mkdirs();
-			if (!file.canWrite()) return;
+			if (!file.canWrite() && file.exists()) throw new Exception("Cannot write to file");
 			ReadableByteChannel rbc = Channels.newChannel(RESOURCE_PACK_URL.openStream());
 			FileOutputStream fos = new FileOutputStream(file);
 			LOGGER.info("Downloading resource pack...");
