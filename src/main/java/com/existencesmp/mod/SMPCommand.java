@@ -3,7 +3,7 @@ package com.existencesmp.mod;
 import com.mojang.brigadier.context.CommandContext;
 import de.maxhenkel.admiral.annotations.Command;
 import de.maxhenkel.admiral.annotations.Name;
-import de.maxhenkel.admiral.annotations.RequiresPermission;
+import de.maxhenkel.admiral.annotations.RequiresPermissionLevel;
 import net.minecraft.scoreboard.ScoreHolder;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ServerScoreboard;
@@ -18,7 +18,7 @@ public class SMPCommand {
 
 
     @Command({"resource-pack", "update"})
-    @RequiresPermission("smp.resourcePack.update")
+    @RequiresPermissionLevel(4)
     public void resourcePackUpdate(CommandContext<ServerCommandSource> context) {
         try {
             SMPMod.downloadResourcePack(context.getSource().getServer(), true);
@@ -33,7 +33,7 @@ public class SMPCommand {
     }
 
     @Command({"scoreboard", "count"})
-    @RequiresPermission("smp.scoreboard.count")
+    @RequiresPermissionLevel(4)
     public void scoreboardCount(CommandContext<ServerCommandSource> context, @Name("username") String username) {
         ServerScoreboard scoreboard = context.getSource().getServer().getScoreboard();
         ScoreHolder holder = ScoreHolder.fromName(username);
@@ -42,7 +42,7 @@ public class SMPCommand {
     }
 
     @Command({"scoreboard", "compare"})
-    @RequiresPermission("smp.scoreboard.compare")
+    @RequiresPermissionLevel(4)
     public void scoreboardCompare(CommandContext<ServerCommandSource> context, @Name("oldUsername") String oldUsername, @Name("newUsername") String newUsername) {
         ServerScoreboard scoreboard = context.getSource().getServer().getScoreboard();
         ScoreHolder oldHolder = ScoreHolder.fromName(oldUsername);
@@ -64,7 +64,7 @@ public class SMPCommand {
     }
 
     @Command({"scoreboard", "migrate"})
-    @RequiresPermission("smp.scoreboard.migrate")
+    @RequiresPermissionLevel(4)
     public void scoreboardMigrate(CommandContext<ServerCommandSource> context, @Name("oldUsername") String oldUsername, @Name("newUsername") String newUsername) {
         ServerScoreboard scoreboard = context.getSource().getServer().getScoreboard();
         ScoreHolder oldHolder = ScoreHolder.fromName(oldUsername);
