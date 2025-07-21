@@ -1,6 +1,6 @@
 package com.existencesmp.mod;
 
-import com.existencesmp.mod.command.AFKCommand;
+//import com.existencesmp.mod.command.AFKCommand;
 import com.existencesmp.mod.command.SMPCommand;
 import de.maxhenkel.admiral.MinecraftAdmiral;
 import dev.ashhhleyyy.playerpronouns.api.Pronouns;
