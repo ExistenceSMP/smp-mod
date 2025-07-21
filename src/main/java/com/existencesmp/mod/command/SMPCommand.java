@@ -34,6 +34,17 @@ public class SMPCommand {
         }
     }
 
+    @Command({"resource-pack", "squash"})
+    @RequiresPermissionLevel(4)
+    public void resourcePackSquash(CommandContext<ServerCommandSource> context) {
+        try {
+            Thread thread = new Thread(new SMPMod.RunPackSquash());
+            thread.start();
+        } catch (Exception e) {
+            context.getSource().sendError(Text.literal("Failed to squash resource pack: " + e.getMessage()).formatted(Formatting.RED));
+        }
+    }
+
     @Command({"scoreboard", "count"})
     @RequiresPermissionLevel(4)
     public void scoreboardCount(CommandContext<ServerCommandSource> context, @Name("username") String username) {

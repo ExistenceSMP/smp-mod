@@ -26,11 +26,16 @@ import java.io.*;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.charset.StandardCharsets;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class SMPMod implements ModInitializer {
 	public static final String MOD_ID = "existence_smp";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 	public static final URL RESOURCE_PACK_URL;
+	public static final URL PACKSQUASH_URL;
+	public static final boolean IS_WINDOWS = System.getProperty("os.name").toLowerCase().contains("windows");
 	public static String levelName;
 	public static byte[] iconBytes;
 	public static MinecraftServer server;
@@ -38,6 +43,11 @@ public class SMPMod implements ModInitializer {
     static {
         try {
             RESOURCE_PACK_URL = new URL("https", "github.com", "/ExistenceSMP/community-resource-pack/releases/latest/download/existence_community_resource_pack.zip");
+			if (IS_WINDOWS) {
+				PACKSQUASH_URL = new URL("https", "github.com", "/ComunidadAylas/PackSquash/releases/download/v0.4.0/PackSquash.CLI.executable.x86_64-pc-windows-gnu.zip ");
+			} else {
+				PACKSQUASH_URL = new URL("https", "github.com", "/ComunidadAylas/PackSquash/releases/download/v0.4.0/PackSquash.CLI.executable.x86_64-unknown-linux-musl.zip");
+			}
 			LOGGER.info("Reading pack icon...");
 			InputStream in = SMPMod.class.getResourceAsStream("/assets/existence_smp/icon.png");
 			iconBytes = IOUtils.toByteArray(in);
@@ -50,6 +60,14 @@ public class SMPMod implements ModInitializer {
 	public void onInitialize() {
 		LOGGER.info("Setting pack icon...");
 		PolymerResourcePackUtils.getInstance().setPackIcon(iconBytes);
+
+		File file = IS_WINDOWS ? FabricLoader.getInstance().getGameDir().resolve("packsquash.exe").toFile() : FabricLoader.getInstance().getGameDir().resolve("packsquash").toFile();
+		if (!file.exists()) {
+			Thread downloadPackSquashThread = new Thread(new DownloadPackSquash());
+			downloadPackSquashThread.start();
+		} else {
+			LOGGER.info("PackSquash already exists");
+		}
 
 		Placeholders.register(
 				Identifier.of(MOD_ID, "pronouns"),
@@ -100,7 +118,7 @@ public class SMPMod implements ModInitializer {
 		try {
 			File file = FabricLoader.getInstance().getGameDir().resolve(levelName + "/resourcepacks/existence_community_resource_pack.zip").toFile();
 			if (!file.exists()) file.getParentFile().mkdirs();
-			if (!file.canWrite() && file.exists()) throw new Exception("Cannot write to file");
+			if (!file.canWrite() && file.exists()) throw new Exception("Cannot write resource pack");
 			ReadableByteChannel rbc = Channels.newChannel(RESOURCE_PACK_URL.openStream());
 			FileOutputStream fos = new FileOutputStream(file);
 			LOGGER.info("Downloading resource pack...");
@@ -112,6 +130,144 @@ public class SMPMod implements ModInitializer {
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
+		}
+	}
+
+	private static File newFile(File destinationDir, ZipEntry zipEntry) throws IOException {
+		File destFile = new File(destinationDir, zipEntry.getName());
+
+		String destDirPath = destinationDir.getCanonicalPath();
+		String destFilePath = destFile.getCanonicalPath();
+
+		if (!destFilePath.startsWith(destDirPath + File.separator)) {
+			throw new IOException("Entry is outside of the target dir: " + zipEntry.getName());
+		}
+
+		return destFile;
+	}
+
+	private static class DownloadPackSquash implements Runnable {
+		@Override
+		public void run() {
+			try {
+				File zipfile = FabricLoader.getInstance().getGameDir().resolve("packsquash.zip").toFile();
+				if (!zipfile.exists()) zipfile.getParentFile().mkdirs();
+				if (!zipfile.canWrite() && zipfile.exists()) throw new Exception("Cannot write packsquash");
+				ReadableByteChannel zrbc = Channels.newChannel(PACKSQUASH_URL.openStream());
+				FileOutputStream zfos = new FileOutputStream(zipfile);
+				LOGGER.info("Downloading PackSquash...");
+				zfos.getChannel().transferFrom(zrbc, 0, Long.MAX_VALUE);
+				LOGGER.info("Successfully downloaded PackSquash to " + zipfile.getPath());
+				File outDir = FabricLoader.getInstance().getGameDir().toAbsolutePath().resolve("packsquash").toFile();
+				byte[] buffer = new byte[1024];
+				ZipInputStream zis = new ZipInputStream(new FileInputStream(zipfile));
+				ZipEntry zipEntry = zis.getNextEntry();
+				while (zipEntry != null) {
+					File newFile = newFile(outDir, zipEntry);
+					if (zipEntry.isDirectory()) {
+						if (!newFile.isDirectory() && !newFile.mkdirs()) {
+							throw new IOException("Failed to create directory " + newFile);
+						}
+					} else {
+						File parent = newFile.getParentFile();
+						if (!parent.isDirectory() && !parent.mkdirs()) {
+							throw new IOException("Failed to create directory " + parent);
+						}
+
+						FileOutputStream fos = new FileOutputStream(newFile);
+						int len;
+						while ((len = zis.read(buffer)) > 0) {
+							fos.write(buffer, 0, len);
+						}
+						fos.close();
+					}
+					zipEntry = zis.getNextEntry();
+				}
+				zis.closeEntry();
+				zis.close();
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
+
+	public static class RunPackSquash implements Runnable {
+		@Override
+		public void run() {
+			final String packSquashExecutablePath = IS_WINDOWS ? FabricLoader.getInstance().getGameDir().resolve("packsquash").resolve("packsquash.exe").toAbsolutePath().toString() : FabricLoader.getInstance().getGameDir().resolve("packsquash").resolve("packsquash").toAbsolutePath().toString();
+			try {
+				File outDir = FabricLoader.getInstance().getGameDir().toAbsolutePath().resolve("packsquash").resolve("pack").toFile();
+				File zipfile = FabricLoader.getInstance().getGameDir().resolve("polymer").resolve("resource_pack.zip").toFile();
+				byte[] buffer = new byte[1024];
+				ZipInputStream zis = new ZipInputStream(new FileInputStream(zipfile));
+				ZipEntry zipEntry = zis.getNextEntry();
+				while (zipEntry != null) {
+					File newFile = newFile(outDir, zipEntry);
+					if (zipEntry.isDirectory()) {
+						if (!newFile.isDirectory() && !newFile.mkdirs()) {
+							throw new IOException("Failed to create directory " + newFile);
+						}
+					} else {
+						File parent = newFile.getParentFile();
+						if (!parent.isDirectory() && !parent.mkdirs()) {
+							throw new IOException("Failed to create directory " + parent);
+						}
+
+						FileOutputStream fos = new FileOutputStream(newFile);
+						int len;
+						while ((len = zis.read(buffer)) > 0) {
+							fos.write(buffer, 0, len);
+						}
+						fos.close();
+					}
+					zipEntry = zis.getNextEntry();
+				}
+				zis.closeEntry();
+				zis.close();
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+			final File packFolder = FabricLoader.getInstance().getGameDir().resolve("packsquash").resolve("pack").toFile();
+			final InputStream partialSettingsStream = SMPMod.class.getResourceAsStream("/packsquash.toml");
+			final ProcessBuilder processBuilder = new ProcessBuilder(packSquashExecutablePath);
+			processBuilder.directory(packFolder);
+			processBuilder.redirectInput(ProcessBuilder.Redirect.PIPE);
+			processBuilder.redirectOutput(ProcessBuilder.Redirect.PIPE);
+			processBuilder.redirectErrorStream(true);
+			try {
+				final Process packSquashProcess;
+				packSquashProcess = processBuilder.start();
+				final OutputStream packSquashInputStream = packSquashProcess.getOutputStream();
+				try {
+					packSquashInputStream.write(
+							("pack_directory = \".\"" + System.lineSeparator()).getBytes(StandardCharsets.UTF_8)
+					);
+					partialSettingsStream.transferTo(packSquashInputStream);
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				} finally {
+					packSquashInputStream.close();
+				}
+				final InputStream packSquashOutputStream = new BufferedInputStream(packSquashProcess.getInputStream());
+				try {
+					int outputByte;
+					while ((outputByte = packSquashOutputStream.read()) != -1) {
+						System.out.write(outputByte);
+					}
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				} finally {
+					packSquashOutputStream.close();
+				}
+				try {
+					System.out.println("- PackSquash finished with code " + packSquashProcess.waitFor());
+				} catch (final InterruptedException exc) {
+					System.out.println("- Thread interrupted while waiting for PackSquash to finish!");
+					exc.printStackTrace();
+				}
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
 		}
 	}
 }

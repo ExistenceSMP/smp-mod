@@ -1,0 +1,4 @@
+output_file_path = '../../polymer/resource_pack.zip'
+zip_spec_conformance_level = 'balanced'
+recompress_compressed_files = true
+ignore_system_and_hidden_files = false
