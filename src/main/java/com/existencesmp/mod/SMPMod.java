@@ -227,6 +227,8 @@ public class SMPMod implements ModInitializer {
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
+			final File outputFile = FabricLoader.getInstance().getGameDir().resolve("polymer").resolve("resource_pack.zip").toFile();
+			long beforeLength = outputFile.length();
 			final File packFolder = FabricLoader.getInstance().getGameDir().resolve("packsquash").resolve("pack").toFile();
 			final InputStream partialSettingsStream = SMPMod.class.getResourceAsStream("/packsquash.toml");
 			final ProcessBuilder processBuilder = new ProcessBuilder(packSquashExecutablePath);
@@ -260,9 +262,10 @@ public class SMPMod implements ModInitializer {
 					packSquashOutputStream.close();
 				}
 				try {
-					System.out.println("- PackSquash finished with code " + packSquashProcess.waitFor());
+					LOGGER.info("- PackSquash finished with code " + packSquashProcess.waitFor());
+					LOGGER.info("Before: " + beforeLength + "B, after: " + outputFile.length() + "B");
 				} catch (final InterruptedException exc) {
-					System.out.println("- Thread interrupted while waiting for PackSquash to finish!");
+					LOGGER.info("- Thread interrupted while waiting for PackSquash to finish!");
 					exc.printStackTrace();
 				}
 			} catch (Exception e) {
