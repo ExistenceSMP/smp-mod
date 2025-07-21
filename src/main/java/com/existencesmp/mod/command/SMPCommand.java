@@ -1,5 +1,8 @@
-package com.existencesmp.mod;
+package com.existencesmp.mod.command;
 
+import com.existencesmp.mod.SMPMod;
+import com.existencesmp.mod.scoreboard.ScoreboardMigration;
+import com.existencesmp.mod.scoreboard.ScoreboardMigrator;
 import com.mojang.brigadier.context.CommandContext;
 import de.maxhenkel.admiral.annotations.Command;
 import de.maxhenkel.admiral.annotations.Name;
@@ -15,7 +18,6 @@ import java.util.List;
 
 @Command("smp")
 public class SMPCommand {
-
 
     @Command({"resource-pack", "update"})
     @RequiresPermissionLevel(4)
@@ -47,7 +49,7 @@ public class SMPCommand {
         ServerScoreboard scoreboard = context.getSource().getServer().getScoreboard();
         ScoreHolder oldHolder = ScoreHolder.fromName(oldUsername);
         ScoreHolder newHolder = ScoreHolder.fromName(newUsername);
-        ScoreboardMigrator.ScoreboardMigration migration = new ScoreboardMigrator.ScoreboardMigration(scoreboard, oldHolder, newHolder);
+        ScoreboardMigration migration = new ScoreboardMigration(scoreboard, oldHolder, newHolder);
         List<String> overrideNames = migration.override.stream().map(ScoreboardObjective::getName).toList();
         List<String> createNames = migration.create.stream().map(ScoreboardObjective::getName).toList();
         List<String> ignoreNames = migration.ignore.stream().map(ScoreboardObjective::getName).toList();
@@ -69,7 +71,7 @@ public class SMPCommand {
         ServerScoreboard scoreboard = context.getSource().getServer().getScoreboard();
         ScoreHolder oldHolder = ScoreHolder.fromName(oldUsername);
         ScoreHolder newHolder = ScoreHolder.fromName(newUsername);
-        ScoreboardMigrator.ScoreboardMigration migration = new ScoreboardMigrator.ScoreboardMigration(scoreboard, oldHolder, newHolder);
+        ScoreboardMigration migration = new ScoreboardMigration(scoreboard, oldHolder, newHolder);
         List<String> overrideNames = migration.override.stream().map(ScoreboardObjective::getName).toList();
         List<String> createNames = migration.create.stream().map(ScoreboardObjective::getName).toList();
         List<String> ignoreNames = migration.ignore.stream().map(ScoreboardObjective::getName).toList();

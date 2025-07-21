@@ -1,5 +1,7 @@
 package com.existencesmp.mod;
 
+import com.existencesmp.mod.command.AFKCommand;
+import com.existencesmp.mod.command.SMPCommand;
 import de.maxhenkel.admiral.MinecraftAdmiral;
 import dev.ashhhleyyy.playerpronouns.api.Pronouns;
 import dev.ashhhleyyy.playerpronouns.api.PronounsApi;
@@ -86,7 +88,10 @@ public class SMPMod implements ModInitializer {
 
 		CommandRegistrationCallback.EVENT.register(
 				(commandDispatcher, commandRegistryAccess, registrationEnvironment) ->
-						MinecraftAdmiral.builder(commandDispatcher, commandRegistryAccess).addCommandClasses(SMPCommand.class).build()
+						MinecraftAdmiral.builder(commandDispatcher, commandRegistryAccess).addCommandClasses(
+								SMPCommand.class
+//								AFKCommand.class
+						).build()
 		);
     }
 

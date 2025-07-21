@@ -27,6 +27,7 @@ repositories {
 			includeGroup "maven.modrinth"
 		}
 	}
+	maven { url = uri("https://jitpack.io") }
 }
 
 loom {
@@ -57,6 +58,7 @@ dependencies {
 	modLocalRuntime "eu.pb4:predicate-api:${project.predicate_api_version}"
 	modImplementation "eu.pb4:polymer-bundled:${project.polymer_version}"
 	modImplementation include("maven.modrinth:admiral:${project.admiral_version}+fabric")
+	modImplementation "com.github.gnembon:fabric-carpet:${project.carpet_version}"
 }
 
 processResources {
